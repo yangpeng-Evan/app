@@ -11,7 +11,7 @@
         <article>
             <h1><em>Logo</em><span>APP应用商店后台</span></h1>
             <div class="main">
-                <form >
+                <form id="from">
 
                     <div class="userName">
                         <label for="devName">用户名:</label>
@@ -53,6 +53,22 @@
         </footer>
     </div>
 <script>
+
+    //执行注册
+    $("#btnSubmit").click(function () {
+        $.post(
+            "/dev/user/register",
+            $("#from").serialize(),
+            function (result) {
+                if (result.code == 0){
+                    location.href = "/dev/user/login-ui";
+                }else {
+                    alert("注册失败！！！");
+                }
+            },
+            "json"
+        );
+    });
     //异步校验用户名是否可用
     $("#devName").blur(function () {
         //获取输入的用户名

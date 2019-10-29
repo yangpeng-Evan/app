@@ -8,6 +8,12 @@ import com.qf.entity.DevUser;
 public interface DevUserService {
 
 
-    // 1. 根据用户名查询用户信息..
+    /**
+     * 1. 根据用户名查询用户信息..
+     * @param username
+     * @return
+     */
     DevUser findByDevUsername(String username);
+
+    void addDevUser(DevUser devUser);
 }

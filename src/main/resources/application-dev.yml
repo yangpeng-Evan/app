@@ -11,7 +11,11 @@ spring:
     username: root
     password:
     type: com.alibaba.druid.pool.DruidDataSource
-
+  mail:
+    host: smtp.163.com
+    username: 13478530122@163.com
+    password: yangpeng1211
+    activeUrl: http://10.9.63.232
 
 mybatis:
   configuration:

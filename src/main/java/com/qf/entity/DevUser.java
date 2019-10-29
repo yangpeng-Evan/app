@@ -1,8 +1,11 @@
 package com.qf.entity;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
@@ -15,21 +18,26 @@ public class DevUser  implements Serializable {
 	private Integer id;
 
 	@Column(name = "dev_username")
+	@NotBlank(message = "用户名不能为空")
 	private String devUsername;
 
 	@Column(name = "dev_password")
+	@NotBlank(message = "用户密码不能为空！！")
 	private String devPassword;
 
 	@Column(name = "dev_salt")
 	private String devSalt;
 
 	@Column(name = "dev_email")
+	@NotBlank(message = "用户邮箱不能为空！！")
 	private String devEmail;
 
 	@Column(name = "dev_code")
 	private String devCode;
 
 	@Column(name = "dev_birthday")
+	@NotNull(message = "用户生日不能为空")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private java.util.Date devBirthday;
 
 	@Column(name = "dev_state")
