@@ -1,7 +1,9 @@
 package com.qf.controller;
 
+import com.qf.constant.AppConstant;
 import com.qf.entity.DevUser;
 import com.qf.enums.AppEnum;
+import com.qf.exception.AppException;
 import com.qf.service.DevUserService;
 import com.qf.service.SendEmailService;
 import com.qf.util.R;
@@ -9,6 +11,8 @@ import com.qf.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,6 +75,30 @@ public class DevUserController {
             return R.error(AppEnum.DEV_USER_REGISTER_ERROR);
         }
         return R.ok();
+    }
+
+    //用户邮件激活
+    @GetMapping("active")
+    public String active(String email, String code, Model model){
+        //校验参数
+        if (StringUtils.isEmpty(email) ||StringUtils.isEmpty(code)){
+            log.info("【用户激活】 参数不能为空！！！");
+            model.addAttribute(AppConstant.INFO,"参数不能为空");
+            return AppConstant.ERROR_PAGE;
+        }
+
+        try {
+            //调用service激活用户
+            devUserService.activeDevUser(email,code);
+            //激活成功，跳转页面
+            model.addAttribute(AppConstant.INFO,"激活成功, <a href='/dev/user/login-ui'>点击这里</a> 跳转到登录页面");
+            return AppConstant.SUCCESS_PAGE;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("【用户激活】 用户激活失败！！！");
+            model.addAttribute(AppConstant.INFO,e.getMessage());
+            return AppConstant.ERROR_PAGE;
+        }
     }
 
     //2. 转发到登录页面.
