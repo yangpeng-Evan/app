@@ -9,7 +9,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql:///app?characterEncoding=UTF-8&useSSL=false
     username: root
-    password: root
+    password:
     type: com.alibaba.druid.pool.DruidDataSource
 
 

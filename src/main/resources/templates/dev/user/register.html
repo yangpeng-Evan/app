@@ -12,10 +12,11 @@
             <h1><em>Logo</em><span>APP应用商店后台</span></h1>
             <div class="main">
                 <form >
-                    <p th:style="'color:red;'"></p>
+
                     <div class="userName">
                         <label for="devName">用户名:</label>
                         <input type="text" id="devName" required name="devUsername" placeholder="输入用户名"><!--<em>由5-8个字符组成！</em>-->
+                        <p id="p"></p>
                     </div>
                     <div class="password">
                         <label for="devPassword">密码:</label>
@@ -34,7 +35,7 @@
                         <label for="devBirthday">出生年月:</label>
                         <input type="date" id="devBirthday" required name="devBirthday" placeholder="输入出生年月">
                     </div>
-                    <button id="btnSubmit" >注册</button>
+                    <button type="button" id="btnSubmit" >注册</button>
                     <p class="login"><span>已有账号?</span><a th:href="@{/dev/user/login-ui}">立即登录</a></p>
                 </form>
             </div>
@@ -52,6 +53,33 @@
         </footer>
     </div>
 <script>
+    //异步校验用户名是否可用
+    $("#devName").blur(function () {
+        //获取输入的用户名
+        var devUsername = $("#devName").val();
+        //校验获取到的用户名，如果用户名为空或者长度小于5位，则不合法
+        if (devUsername ==null || devUsername.length<5){
+            $("#p").html("用户名不能为空且长度必须大于5！！！").css("color","yellow");
+            $("#btnSubmit").attr("disabled","disabled");
+            return;
+        }
+
+        $.post(
+            "/dev/user/check-devUsername",
+            {"devUsername":devUsername},
+            function (result) {
+                if (result.code==0){
+                    $("#p").html("用户名可用！！！").css("color","green");
+                    $("#btnSubmit").removeAttr("disabled");
+                }else {
+                    $("#p").html("用户名已存在，请重新输入！！！").css("color","yellow");
+                    $("#btnSubmit").attr("disabled","disabled");
+                }
+            },
+            "json"
+        );
+    });
+
     // 校验两次密码
     function keyUp() {
         var a = $('#devPassword').val();
