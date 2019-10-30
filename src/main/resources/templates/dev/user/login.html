@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org/">
 <head>
     <meta charset="UTF-8">
-    <title>登陆页面</title>
+    <title>登录页面</title>
     <link rel="stylesheet" type="text/css" th:href="@{/user/css/login.css}">
     <script type="text/javascript" th:src="@{/user/js/jquery.min.js}"></script>
     <script type="text/javascript">
@@ -32,12 +32,13 @@
                         <em>
                             <img src="/user/img/user.png">
                         </em>
-                         <form >
-                            <p th:style="'color:red;'" ></p>
+                         <form id="form">
+                            <p id="p" ></p>
                             <p class="name"><i></i><input type="text" required name="devUsername" class="userName" placeholder="请输入用户名"></p>
                             <p class="password"><i></i><input type="password" required name="devPassword" class="pwd" placeholder="请输入密码"></p>
-                            <button type="submit">登录</button>
-                            <p class="register"><span>没有账号?</span><a th:href="@{/dev/user/register-ui}">立即注册</a></p>
+                            <button type="button" id="loginBtn">登录</button>
+                            <p class="register"><span>没有账号?</span><a th:href="@{/dev/user/register-ui}">立即注册</a></br><span>没有激活?</span><a th:href="@{/dev/user/resend-ui}">&nbsp;去激活</a></p>
+                            <p class="register"></p>
                             <div class="clear"></div>
                         </form>
                     </aside>
@@ -57,5 +58,24 @@
             </footer>
         </div>
     </div>
+
+<script>
+    $("#loginBtn").click(function () {
+        var date = $("#form").serialize();
+        $.post(
+            "/dev/user/login",
+            date,
+            function (result) {
+                if (result.code==0){
+                    alert("登录成功")
+                    location.href = "/dev/app/index-ui"
+                }else {
+                    $("#p").html(result.msg).css("color","red")
+                }
+            },
+            "json"
+        );
+    });
+</script>
 </body>
 </html>

@@ -11,10 +11,12 @@ public enum AppEnum {
 
     DEV_USER_REGISTER_ERROR(22,"注册账号失败!!"),
 
-    DEV_USER_ACTIVE_ERROR(23,"已经激活或者用户已经失效!!"),
+    DEV_USER_ACTIVE_ERROR(23,"用户已经激活!!"),
 
     DEV_USER_NOT_EXISTS(24,"用户不存在!!"),
-    SEND_EMAIL_ERROR(33,"邮件发送失败!!")
+    SEND_EMAIL_ERROR(33,"邮件发送失败!!"),
+    UPDATE_DEVUSER_STATE_ERROR(43,"修改用户状态失败！！"),
+    DEVUSER_NOT_ACTIVE_ERROR(50,"用户未激活！！")
 
     ;
 

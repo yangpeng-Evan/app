@@ -1,6 +1,10 @@
 package com.qf.shiro;
 
+import com.qf.constant.AppConstant;
 import com.qf.entity.DevUser;
+import com.qf.enums.AppEnum;
+import com.qf.enums.DevUserStateEnum;
+import com.qf.exception.AppException;
 import com.qf.service.DevUserService;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -23,8 +27,8 @@ public class DevRealm extends AuthorizingRealm {
     // 设置MD5加密1024次.
     {
         HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();
-        matcher.setHashAlgorithmName("MD5");
-        matcher.setHashIterations(1024);
+        matcher.setHashAlgorithmName(AppConstant.HASH_ALGORITHM_NAME);
+        matcher.setHashIterations(AppConstant.HASH_ITERATIONS);
         this.setCredentialsMatcher(matcher);
     }
 
@@ -40,6 +44,11 @@ public class DevRealm extends AuthorizingRealm {
         //3. 判断用户信息是否为null -> 直接返回true
         if(devUser == null){
             return null;
+        }
+
+        //判断用户是否激活
+        if (devUser.getDevState() == DevUserStateEnum.NOT_ACTIVE.getState()){
+            throw new AppException(AppEnum.DEVUSER_NOT_ACTIVE_ERROR);
         }
         //4. 将正确的user对象和密码封装到AuthenticationInfo对象中.
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(devUser,devUser.getDevPassword(),"DevRealm");

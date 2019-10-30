@@ -9,6 +9,10 @@ import com.qf.service.SendEmailService;
 import com.qf.util.R;
 import com.qf.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -101,10 +105,65 @@ public class DevUserController {
         }
     }
 
+    //转发到重新发送邮件页面
+    @GetMapping("/resend-ui")
+    public String reSend(){
+        return "/dev/user/resend";
+    }
+
+    //重新发送激活邮件
+    @PostMapping("/resend-active")
+    @ResponseBody
+    public ResultVO resend(String devUsername,String devEmail){
+        //校验参数
+        if (devUsername == null || devUsername.length()<5){
+            log.info("【重新发送激活邮件】 用户名不能为空且长度不能小于5！！！devUsername={}",devUsername);
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"用户名不能为空且长度不能小于5！！！");
+        }
+        if (devEmail == null){
+            log.info("【重新发送激活邮件】 用户邮箱不能为空！ devEmail={}",devEmail);
+            return R.error(AppEnum.PARAM_ERROR);
+        }
+        //调用service重新发送激活邮件
+        try {
+            devUserService.resendEmail(devUsername,devEmail);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("【重新发送激活邮件】 重新发送邮件异常！！！devUsername={},devEmail={}",devUsername,devEmail);
+            return R.error(AppEnum.PARAM_ERROR);
+        }
+        return R.ok();
+
+    }
+
     //2. 转发到登录页面.
     @GetMapping("/login-ui")
     public String loginUI(){
         return "dev/user/login";
+    }
+
+    //执行登录
+    @PostMapping("/login")
+    @ResponseBody
+    public ResultVO login(DevUser devUser){
+        //校验参数
+        if (StringUtils.isEmpty(devUser.getDevUsername()) || devUser.getDevUsername().length() < 5){
+            log.info("【登录功能】 用户名不能为空且不能小于5位 devUsername={}",devUser.getDevUsername());
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"用户名不能为空且不能小于5位");
+        }
+        if (StringUtils.isEmpty(devUser.getDevPassword())){
+            log.info("【登录功能】 密码不能为空！！！ devPassword={}",devUser.getDevPassword());
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"密码不能为空！！");
+        }
+        //获取主体
+        Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.login(new UsernamePasswordToken(devUser.getDevUsername(),devUser.getDevPassword()));
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"用户名或密码错误！！");
+        }
+        return R.ok();
     }
 
 }
