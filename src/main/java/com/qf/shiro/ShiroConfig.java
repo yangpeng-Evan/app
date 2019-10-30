@@ -1,5 +1,6 @@
 package com.qf.shiro;
 
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import com.qf.service.FilterChainService;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
@@ -21,6 +22,10 @@ public class ShiroConfig {
         return new DevRealm();
     }
 
+    @Bean
+    public ShiroDialect shiroDialect(){
+        return new ShiroDialect();
+    }
     //1. SecurityManager
     @Bean
     public DefaultWebSecurityManager securityManager(Realm realm){
