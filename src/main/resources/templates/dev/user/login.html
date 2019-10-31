@@ -5,6 +5,7 @@
     <title>登录页面</title>
     <link rel="stylesheet" type="text/css" th:href="@{/user/css/login.css}">
     <script type="text/javascript" th:src="@{/user/js/jquery.min.js}"></script>
+    <i th:replace="~{common :: baseUrl}"></i>
     <script type="text/javascript">
         $(function(){
             $(".name input").focus(function(){
@@ -32,13 +33,15 @@
                         <em>
                             <img src="/user/img/user.png">
                         </em>
-                         <form id="form">
-                            <p id="p" ></p>
+                         <form id="loginForm">
+                            <p th:style="'color:red;'" id="p" ></p>
                             <p class="name"><i></i><input type="text" required name="devUsername" class="userName" placeholder="请输入用户名"></p>
                             <p class="password"><i></i><input type="password" required name="devPassword" class="pwd" placeholder="请输入密码"></p>
                             <button type="button" id="loginBtn">登录</button>
-                            <p class="register"><span>没有账号?</span><a th:href="@{/dev/user/register-ui}">立即注册</a></br><span>没有激活?</span><a th:href="@{/dev/user/resend-ui}">&nbsp;去激活</a></p>
-                            <p class="register"></p>
+                            <p class="register"><span>没有账号?</span><a th:href="@{/dev/user/register-ui}">立即注册</a><br>
+                                <span>没有激活?</span><a th:href="@{/dev/user/active-ui}">重新发送</a>
+                            </p><br>
+                            <p class="register" style="margin-top: -10px"></p>
                             <div class="clear"></div>
                         </form>
                     </aside>
@@ -58,19 +61,17 @@
             </footer>
         </div>
     </div>
-
 <script>
-    $("#loginBtn").click(function () {
-        var date = $("#form").serialize();
+    //  给登录按钮绑定单击事件.
+    $("#loginBtn").click(function(){
         $.post(
-            "/dev/user/login",
-            date,
-            function (result) {
-                if (result.code==0){
-                    alert("登录成功")
-                    location.href = "/dev/app/index-ui"
-                }else {
-                    $("#p").html(result.msg).css("color","red")
+            baseUrl + "dev/user/login",
+            $("#loginForm").serialize(),
+            function(result){
+                if(result.code == 0){
+                    location.href = baseUrl + "dev/app/index";
+                }else{
+                    $("#p").html(result.msg);
                 }
             },
             "json"

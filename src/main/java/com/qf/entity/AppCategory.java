@@ -1,5 +1,6 @@
 package com.qf.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,13 +19,17 @@ public class AppCategory  implements Serializable {
 	private String categoryName;
 
 	@Column(name = "parent_id")
+	@JsonIgnore
 	private Integer parentId;
 
 	@Column(name = "is_parent")
+	@JsonIgnore
 	private String isParent;
 
+	@JsonIgnore
 	private java.util.Date created;
 
+	@JsonIgnore
 	private java.util.Date updated;
 
 }

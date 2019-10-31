@@ -38,5 +38,5 @@ pagehelper:
 
 # shiro的路径
 shiro:
-  loginUrl: /
+  loginUrl: /dev/user/login
   unauthorizedUrl: /

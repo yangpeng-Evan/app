@@ -1,38 +1,103 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>开发者后台首页</title>
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    <i th:replace="~{common :: baseUrl}"></i>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
 
-    <!--    头部导航-->
+<!--    头部导航-->
     <i th:replace="~{dev/app/common :: header}"></i>
 
-    <!--    左侧导航-->
+<!--    左侧导航-->
     <i th:replace="~{dev/app/common :: left}"></i>
 
-    <!--    主体区域-->
+<!--    主体区域-->
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="width: 100%;height: 666px;" id="div1"></div>
         <div style="width: 300px;height: 500px;" id="div2"></div>
     </div>
 
-    <!--    底部区域-->
+<!--    底部区域-->
     <i th:replace="~{dev/app/common :: footer}"></i>
+
 </div>
 <script th:src="@{/layui/echarts.min.js}"></script>
 <script th:src="@{/layui/layui.js}"></script>
 <script>
     //JavaScript代码区域
-    layui.use('element', function(){
+    layui.use(['element'], function(){
         var element = layui.element;
+        var $ = layui.$;
 
+
+        // 声明两个一维数组
+        var softwareNameArray = [];
+        var downloadsArray = [];
+        // 下载量top five
+        $.getJSON(
+            baseUrl + "dev/app/downloads-top-five",
+            null,
+            function(result){
+                if(result.code == 0){
+                    //1. 获取json数组
+                    var jsonArray = result.data;
+                    for(var i = 0; i < jsonArray.length;i++){
+                        softwareNameArray.push(jsonArray[i].softwareName);
+                        downloadsArray.push(jsonArray[i].downloads);
+                    }
+                    // 蓝色的柱状图
+                    option1 = {
+                        color: ['#3398DB'],
+                        tooltip : {
+                            trigger: 'axis',
+                            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis : [
+                            {
+                                type : 'category',
+                                data : softwareNameArray,
+                                axisTick: {
+                                    alignWithLabel: true
+                                }
+                            }
+                        ],
+                        yAxis : [
+                            {
+                                type : 'value'
+                            }
+                        ],
+                        series : [
+                            {
+                                name:'直接访问',
+                                type:'bar',
+                                barWidth: '60%',
+                                data:downloadsArray
+                            }
+                        ]
+                    };
+
+                    var divEcharts1 = echarts.init(document.getElementById("div1"));
+
+                    divEcharts1.setOption(option1);
+                }else{
+                    layer.msg(result.msg);
+                }
+            }
+        );
     });
 </script>
 </body>

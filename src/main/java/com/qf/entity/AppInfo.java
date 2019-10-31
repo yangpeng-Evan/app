@@ -44,7 +44,7 @@ public class AppInfo  implements Serializable {
 	@Column(name = "flatform_id")
 	private Integer flatformId;
 
-	private Integer downloads;
+	private Long downloads;
 
 	@Column(name = "category_level1")
 	private Integer categoryLevel1;
