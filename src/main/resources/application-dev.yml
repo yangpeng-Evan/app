@@ -40,3 +40,16 @@ pagehelper:
 shiro:
   loginUrl: /dev/user/login
   unauthorizedUrl: /
+
+#上传图片的类型限制
+upload:
+  pic:
+    types: jpg,png,jpeg,gif
+
+#阿里云配置
+aliyun:
+  endpoint: oss-cn-beijing.aliyuncs.com
+  accessKeyId: LTAI4FpY5qLNmNKpZAwocpyz
+  accessKeySecret: fHKbMgZKFAc7Dw575WPHYrDvCoxvlq
+  bucketName: yangpeng1
+

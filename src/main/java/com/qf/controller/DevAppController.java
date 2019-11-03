@@ -109,4 +109,15 @@ public class DevAppController {
         LayUiTableVO vo = appInfoService.findAllAppInfo(param);
         return vo;
     }
+
+    @GetMapping("/base-add-ui")
+    public String BaseAddUI(Model model){
+        //1. 所属平台.
+        List<DataDictionary> flatFormList = dataDictionaryService.findByTypeCode(AppTypeCodeEnum.APP_FLATFORM.getTypeCode());
+        model.addAttribute("flatFormList",flatFormList);
+        //2. 一级分类.
+        List<AppCategory> LevelOneList = appCategoryService.findByParentId(LEVEL_ONE_PARENT_ID);
+        model.addAttribute("levelOneList",LevelOneList);
+        return "dev/app/base-add";
+    }
 }

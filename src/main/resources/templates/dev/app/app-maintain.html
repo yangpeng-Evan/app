@@ -91,10 +91,10 @@
         <table class="layui-hide" id="softTable" lay-filter="softTable"></table>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-normal" lay-event="getCheckData"><i class="layui-icon layui-icon-add-1"></i>添加</button>
-                <button class="layui-btn layui-btn-warm" lay-event="getCheckLength"><i class="layui-icon layui-icon-up"></i>上架</button>
-                <button class="layui-btn layui-btn-warm" lay-event="getCheckLength"><i class="layui-icon layui-icon-down"></i>下架</button>
-                <button class="layui-btn layui-btn-danger" lay-event="isAll"><i class="layui-icon">&#xe640;</i>删除</button>
+                <button class="layui-btn layui-btn-normal" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加</button>
+                <button class="layui-btn layui-btn-warm" lay-event="up"><i class="layui-icon layui-icon-up"></i>上架</button>
+                <button class="layui-btn layui-btn-warm" lay-event="down"><i class="layui-icon layui-icon-down"></i>下架</button>
+                <button class="layui-btn layui-btn-danger" lay-event="del"><i class="layui-icon">&#xe640;</i>删除</button>
             </div>
         </script>
 
@@ -165,7 +165,89 @@
                 }
             })
         });
-});
+
+        //5. 监听头部工具栏
+        //头工具栏事件 toolbar(table的lay-filter)
+        table.on('toolbar(softTable)', function(obj){
+            //  获取选中行的全部数据
+            //  var checkStatus = table.checkStatus(obj.config.id);
+            //   var data = checkStatus.data;   //  选中具体数据数组.
+            //   var flag = checkStatus.isAll; //  是否全选
+            //   JSON.stringify(data);    // 将一个数组序列化成json
+            switch(obj.event){
+                case 'add':
+                    //1. 弹出一个全新的窗口.
+                    layer.open({
+                        //2. 跳转到一个页面
+                        type: 2,
+                        content: baseUrl + 'dev/app/base-add-ui',
+                        // 指定宽高
+                        area: ['1000px', '800px'],
+                        end: function(){
+                            // 重新加载表格
+                            table.reload('appMaintain', {
+                                where: {
+                                    softwareName: $("#softwareName").val(),
+                                    flatformId: $("#flatformId").val(),
+                                    appStatus: $("#appStatus").val(),
+                                    levelOne: $("#levelOne").val(),
+                                    levelTwo: $("#levelTwo").val(),
+                                    levelThree: $("#levelThree").val()
+                                }
+                            });
+                        }
+                    });
+                    break;
+                /*case 'up':
+                    //2. 执行上架操作.
+                    //1. 判断软件状态   已下架and审核通过.     待审核,审核驳回,已上架
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    var dataArray = checkStatus.data;
+                    //2. 声明参数id
+                    var ids = [];
+                    //3. 遍历dataArray数组判断,并封装数据id
+                    for(var i = 0;i < dataArray.length;i++){
+                        if(dataArray[i].appStatus == 1 || dataArray[i].appStatus == 3 || dataArray[i].appStatus == 4){
+                            layer.msg(dataArray[i].softwareName + "的状态为:" + dataArray[i].appStatusName + ",不能执行上架操作!!");
+                            return;
+                        }
+                        // 满足要求
+                        ids.push(dataArray[i].id);
+                    }
+                    console.log(ids);
+                    //4. 发送ajax请求,修改软件状态.\
+                    $.post(
+                        baseUrl + "dev/app/up",
+                        {ids: ids},
+                        function(result){
+                            if(result.code == 0){
+                                layer.msg("上架成功!");
+                                // 重新加载表格
+                                table.reload('appMaintain', {
+                                    where: {
+                                        softwareName: $("#softwareName").val(),
+                                        flatformId: $("#flatformId").val(),
+                                        appStatus: $("#appStatus").val(),
+                                        levelOne: $("#levelOne").val(),
+                                        levelTwo: $("#levelTwo").val(),
+                                        levelThree: $("#levelThree").val()
+                                    }
+                                });
+                            }else{
+                                layer.msg(result.msg);
+                            }
+                        },
+                        "json"
+                    );
+
+                    break;
+                case 'down':
+                    break;
+                case 'del':
+                    break;*/
+            };
+        });
+    });
 </script>
 </body>
 </html>
