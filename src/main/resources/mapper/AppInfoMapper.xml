@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.mapper.AppInfoMapper">
+
+
+
+<!--    List<AppMaintainVO> findAppMaintain(Map<String, Object> param);-->
+    <select id="findAppMaintain" resultType="com.qf.vo.AppMaintainVO">
+        select
+          *
+        from
+          app_maintain
+        <where>
+            <if test="form.softwareName != null and form.softwareName != ''">
+                software_name like "%"#{form.softwareName}"%"
+            </if>
+            <if test="form.flatformId != null and form.flatformId > 0">
+                and flatform_id = #{form.flatformId}
+            </if>
+            <if test="form.appStatus != null and form.appStatus > 0">
+                and app_status = #{form.appStatus}
+            </if>
+            <if test="form.levelOne != null and form.levelOne > 0">
+                and category_level1 = #{form.levelOne}
+            </if>
+            <if test="form.levelTwo != null and form.levelTwo > 0">
+                and category_level2 = #{form.levelTwo}
+            </if>
+            <if test="form.levelThree != null and form.levelThree > 0">
+                and category_level3 = #{form.levelThree}
+            </if>
+        </where>
+    </select>
+
+</mapper>

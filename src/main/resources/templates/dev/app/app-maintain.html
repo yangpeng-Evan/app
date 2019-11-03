@@ -27,27 +27,30 @@
 <!--        三个表单. 软件名称,所属平台,软件状态-->
             <div class="layui-form-item">
 
+<!--                软件名称-->
                 <div class="layui-inline">
                     <label class="layui-form-label">软件名称</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="softwareName" autocomplete="off" class="layui-input">
+                        <input type="text" id="softwareName" name="softwareName" autocomplete="off" class="layui-input">
                     </div>
                 </div>
 
+<!--                软件所属平台-->
                 <div class="layui-inline">
                     <label class="layui-form-label">所属平台</label>
                     <div class="layui-input-inline">
-                        <select name="flatformId" lay-search="">
+                        <select id="flatformId" name="flatformId" lay-search="">
                             <option value="">请选择所属平台</option>
                             <option th:each="f : ${flatFormList}" th:value="${f.valueId}" th:text="${f.valueName}"></option>
                         </select>
                     </div>
                 </div>
 
+<!--                软件状态-->
                 <div class="layui-inline">
                     <label class="layui-form-label">软件状态</label>
                     <div class="layui-input-inline">
-                        <select class="layui-input" name="appStatus">
+                        <select id="appStatus" class="layui-input" name="appStatus">
                             <option value="">请选择软件状态</option>
                             <option th:each="s : ${appStatusList}" th:value="${s.valueId}" th:text="${s.valueName}"></option>
                         </select>
@@ -64,34 +67,43 @@
                     </select>
                 </div>
 
+<!--                二级分类-->
                 <div class="layui-input-inline">
                     <select lay-filter="levelTwo" id="levelTwo" name="levelTwo">
                         <option value="">请选择二级分类</option>
                     </select>
                 </div>
 
+<!--                三级分类-->
                 <div class="layui-input-inline">
                     <select lay-filter="levelThree" id="levelThree" name="levelThree">
                         <option value="">请选择三级分类</option>
                     </select>
                 </div>
+                <div>
+                    <input type="button" id="seach" value="查&nbsp;&nbsp;&nbsp;询" class="layui-btn layui-btn-normal">
+                    <input type="reset" id="reset" value="重&nbsp;&nbsp;&nbsp;置" class="layui-btn layui-btn-primary">
+                </div>
             </div>
+
         </form>
 <!--        2. 一个table,作为展示APP信息的表格-->
-        <table class="layui-hide" id="test" lay-filter="test"></table>
+        <table class="layui-hide" id="softTable" lay-filter="softTable"></table>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
-                <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
-                <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+                <button class="layui-btn layui-btn-normal" lay-event="getCheckData"><i class="layui-icon layui-icon-add-1"></i>添加</button>
+                <button class="layui-btn layui-btn-warm" lay-event="getCheckLength"><i class="layui-icon layui-icon-up"></i>上架</button>
+                <button class="layui-btn layui-btn-warm" lay-event="getCheckLength"><i class="layui-icon layui-icon-down"></i>下架</button>
+                <button class="layui-btn layui-btn-danger" lay-event="isAll"><i class="layui-icon">&#xe640;</i>删除</button>
             </div>
         </script>
 
         <script type="text/html" id="barDemo">
-            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑</a>
+            <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-add-1"></i>新增app版本</a>
+            <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑app版本</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs"><i class="layui-icon layui-icon-file"></i>查看</a>
         </script>
-
     </div>
 
 <!--    底部区域-->
@@ -117,20 +129,43 @@
         form.on('select(levelTwo)', function(data) {
             levelTwo(data,form,$);
         });
-    });
 
 
+        // table渲染
     table.render({
-        elem: '#test'
-        ,url:'/test/table/demo1.json'
+        elem: '#softTable'
+        ,url:baseUrl + "dev/app/table-list"
         ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
         ,cols: [[
-
+            {type:'checkbox',fixed:'left'}
+            ,{field:'softwareName',title:'软件名称',width:120}
+            ,{field:'softwareSize',title:'软件大小'}
+            ,{field:'flatformName',title:'所属平台'}
+            ,{field:'appStatusName',title:'软件状态'}
+            ,{field:'categoryLevel1Name',title:'一级分类'}
+            ,{field:'categoryLevel2Name',title:'二级分类'}
+            ,{field:'categoryLevel3Name',title:'三级分类'}
+            ,{field:'downloads',title:'下载次数'}
+            ,{field:'versionNo',title:'软件版本'}
+            ,{fixed:'right',title:'操作',toolbar:'#barDemo',width:'37.5%'}
         ]]
         ,page: true
     });
-
     
+    // 给查询按钮绑定单击事件
+        $("#seach").click(function () {
+            table.reload("softTable",{
+                where:{
+                    softwareName:$("#softwareName").val(),
+                    flatformId:$("#flatformId").val(),
+                    appStatus:$("#appStatus").val(),
+                    levelOne:$("#levelOne").val(),
+                    levelTwo:$("#levelTwo").val(),
+                    levelThree:$("#levelThree").val(),
+                }
+            })
+        });
+});
 </script>
 </body>
 </html>
