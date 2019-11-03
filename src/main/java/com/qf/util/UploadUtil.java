@@ -3,6 +3,7 @@ package com.qf.util;
 import com.aliyun.oss.OSSClient;
 import com.qf.properties.AliyunProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -13,6 +14,7 @@ import java.util.Date;
 /**
  * @author yangpeng
  */
+@Component
 public class UploadUtil {
 
     @Autowired
@@ -29,7 +31,7 @@ public class UploadUtil {
             Date date = null;
 
             try {
-                date = simpleDateFormat.parse(aliyunProperties.getExpire());
+                date = simpleDateFormat.parse("2020-11-11");
             } catch (ParseException e) {
                 e.printStackTrace();
             }
