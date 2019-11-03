@@ -1,6 +1,7 @@
 package com.qf.controller;
 
 import com.qf.entity.AppCategory;
+import com.qf.entity.AppInfo;
 import com.qf.entity.DataDictionary;
 import com.qf.enums.AppEnum;
 import com.qf.enums.AppTypeCodeEnum;
@@ -16,15 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author yangpeng
+ */
 @Controller
 @RequestMapping("/dev/app")
 @Slf4j
@@ -119,5 +122,20 @@ public class DevAppController {
         List<AppCategory> LevelOneList = appCategoryService.findByParentId(LEVEL_ONE_PARENT_ID);
         model.addAttribute("levelOneList",LevelOneList);
         return "dev/app/base-add";
+    }
+
+    @PostMapping("/base-add")
+    @ResponseBody
+    public ResultVO baseAdd(@Valid AppInfo appInfo, BindingResult bindingResult){
+        //校验参数
+        if (bindingResult.hasErrors()){
+            String msg = bindingResult.getFieldError().getDefaultMessage();
+            log.info("【添加app基础信息】 参数错误！msg={}",msg);
+            return R.error(AppEnum.PARAM_ERROR.getCode(),msg);
+        }
+        //调用service保存
+        appInfoService.add(appInfo);
+        //响应数据
+        return R.ok();
     }
 }

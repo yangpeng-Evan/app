@@ -21,19 +21,19 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">软件名称</label>
                     <div class="layui-input-inline">
-                        <input type="text" lay-verify="required" lay-reqText="软件名称为必填项,岂能为空!!" id="softwareName" name="softwareName" autocomplete="off" class="layui-input">
+                        <input type="text" lay-verify="required" lay-reqText="软件名称不能为空!!" id="softwareName" name="softwareName" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
                     <label class="layui-form-label">apk名称</label>
                     <div class="layui-input-inline">
-                        <input type="text" lay-verify="required" lay-reqText="apk名称为必填项,岂能为空!!" name="apkName" id="apkName"  autocomplete="off" class="layui-input">
+                        <input type="text" lay-verify="required" lay-reqText="apk名称不能为空!!" name="apkName" id="apkName"  autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
                     <label class="layui-form-label">支持ROM</label>
                     <div class="layui-input-inline">
-                        <input type="text" lay-verify="required" lay-reqText="支持ROM版本为必填项,岂能为空!!" id="supportRom" name="supportRom"  autocomplete="off" class="layui-input">
+                        <input type="text" lay-verify="required" lay-reqText="支持ROM版本不能为空!!" id="supportRom" name="supportRom"  autocomplete="off" class="layui-input">
                     </div>
                 </div>
             </div>
@@ -42,19 +42,19 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">界面语言</label>
                     <div class="layui-input-inline">
-                        <input type="text" lay-verify="required" lay-reqText="界面语言为必填项,岂能为空!!" id="interfaceLanguage" name="interfaceLanguage" autocomplete="off" class="layui-input">
+                        <input type="text" lay-verify="required" lay-reqText="界面语言不能为空!!" id="interfaceLanguage" name="interfaceLanguage" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
                     <label class="layui-form-label">软件大小</label>
                     <div class="layui-input-inline">
-                        <input type="text" lay-verify="required" lay-reqText="软件大小为必填项,岂能为空!!" name="softwareSize" id="softwareSize" autocomplete="off" class="layui-input">
+                        <input type="text" lay-verify="required" lay-reqText="软件大小不能为空!!" name="softwareSize" id="softwareSize" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
                     <label class="layui-form-label">所属平台</label>
                     <div class="layui-input-inline">
-                        <select lay-verify="required" lay-reqText="所属平台为必填项,岂能为空!!" name="flatformId" id="flatformId" class="layui-input">
+                        <select lay-verify="required" lay-reqText="所属平台不能为空!!" name="flatformId" id="flatformId" class="layui-input">
                             <option value="">请选择所属平台</option>
                             <option th:each="f : ${flatFormList}" th:value="${f.valueId}" th:text="${f.valueName}"></option>
                         </select>
@@ -66,7 +66,7 @@
         <div class="layui-inline">
             <label class="layui-form-label">一级分类</label>
             <div class="layui-input-inline">
-                <select lay-verify="required" lay-reqText="一级分类为必填项,岂能为空!!" lay-filter="levelOne" id="levelOne" name="categoryLevel1">
+                <select lay-verify="required" lay-reqText="一级分类不能为空!!" lay-filter="levelOne" id="levelOne" name="categoryLevel1">
                     <option value="">请选择一级分类</option>
                     <option th:each="c : ${levelOneList}" th:value="${c.id}" th:text="${c.categoryName}"></option>
                 </select>
@@ -75,7 +75,7 @@
         <div class="layui-inline">
             <label class="layui-form-label">二级分类</label>
             <div class="layui-input-inline">
-                <select lay-verify="required" lay-reqText="二级分类为必填项,岂能为空!!" lay-filter="levelTwo" id="levelTwo" name="categoryLevel2">
+                <select lay-verify="required" lay-reqText="二级分类不能为空!!" lay-filter="levelTwo" id="levelTwo" name="categoryLevel2">
                     <option value="">请选择二级分类</option>
                 </select>
             </div>
@@ -83,7 +83,7 @@
         <div class="layui-inline">
             <label class="layui-form-label">三级分类</label>
             <div class="layui-input-inline">
-                <select lay-verify="required" lay-reqText="三级分类为必填项,岂能为空!!" lay-filter="levelThree" id="levelThree" name="categoryLevel3">
+                <select lay-verify="required" lay-reqText="三级分类不 能为空!!" lay-filter="levelThree" id="levelThree" name="categoryLevel3">
                     <option value="">请选择三级分类</option>
                 </select>
             </div>
@@ -179,7 +179,7 @@
         });
         
         //5.校验表单
-        form.verify({
+        /*form.verify({
             appInfo: function (value,item) {
                 //0.将副文本编辑器的内容同步到extarea
                 layedit.sync(appInfo);
@@ -188,7 +188,7 @@
                     return "APP简介为必填项,岂能不填!!";
                 }
             }
-        });
+        });*/
 
         //6. 监听表单提交事件.
         form.on('submit(go)',function(data){

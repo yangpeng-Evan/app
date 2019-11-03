@@ -1,5 +1,6 @@
 package com.qf.service;
 
+import com.qf.entity.AppInfo;
 import com.qf.vo.DownloadsVO;
 import com.qf.vo.LayUiTableVO;
 
@@ -20,4 +21,12 @@ public interface AppInfoService {
      * @return
      */
     LayUiTableVO findAllAppInfo(Map<String, Object> param);
+
+
+    /**
+     * 添加app基础信息接口
+     * @param appInfo
+     */
+    void add(AppInfo appInfo);
+
 }

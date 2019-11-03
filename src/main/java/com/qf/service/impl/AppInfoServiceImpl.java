@@ -4,12 +4,19 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qf.entity.AppCategory;
 import com.qf.entity.AppInfo;
+import com.qf.entity.DevUser;
+import com.qf.enums.AppEnum;
+import com.qf.enums.AppStatusEnum;
+import com.qf.exception.AppException;
 import com.qf.mapper.AppInfoMapper;
 import com.qf.mapper.DevUserMapper;
 import com.qf.service.AppInfoService;
 import com.qf.vo.AppMaintainVO;
 import com.qf.vo.DownloadsVO;
 import com.qf.vo.LayUiTableVO;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author yangpeng
+ */
 @Service
+@Slf4j
 public class AppInfoServiceImpl implements AppInfoService {
 
     @Resource
@@ -54,5 +65,20 @@ public class AppInfoServiceImpl implements AppInfoService {
         layUiTableVO.setData(appMaintainVOList);
         //返回数据
         return layUiTableVO;
+    }
+
+    @Override
+    public void add(AppInfo appInfo) {
+        //封装数据
+        appInfo.setAppStatus(AppStatusEnum.CHECK_WAIT.getStatus());
+        Integer devId = ((DevUser) SecurityUtils.getSubject().getPrincipal()).getId();
+        appInfo.setDevId(devId);
+        //执行添加
+        int count = appInfoMapper.insertSelective(appInfo);
+        //判断添加结果
+        if (count != 1){
+            log.error("【添加app基础信息】 添加app'基础信息失败！appInfo={}",appInfo);
+            throw new AppException(AppEnum.SAVE_BASE_INFO_ERROR);
+        }
     }
 }
