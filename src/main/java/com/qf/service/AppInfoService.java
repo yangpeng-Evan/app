@@ -29,4 +29,9 @@ public interface AppInfoService {
      */
     void add(AppInfo appInfo);
 
+    /**
+     * 更新app状态
+     * @param ids
+     */
+    void up(Integer[] ids);
 }

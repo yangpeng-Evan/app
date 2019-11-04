@@ -99,6 +99,7 @@ public class DevAppController {
 
     //app维护页面table信息展示
 
+//    表格信息展示
     @GetMapping("/table-list")
     @ResponseBody
     public LayUiTableVO tableList(@RequestParam(defaultValue = "1")Integer page,
@@ -113,6 +114,7 @@ public class DevAppController {
         return vo;
     }
 
+    //跳转到添加页面弹出层
     @GetMapping("/base-add-ui")
     public String BaseAddUI(Model model){
         //1. 所属平台.
@@ -124,6 +126,7 @@ public class DevAppController {
         return "dev/app/base-add";
     }
 
+    //执行添加
     @PostMapping("/base-add")
     @ResponseBody
     public ResultVO baseAdd(@Valid AppInfo appInfo, BindingResult bindingResult){
@@ -135,6 +138,21 @@ public class DevAppController {
         }
         //调用service保存
         appInfoService.add(appInfo);
+        //响应数据
+        return R.ok();
+    }
+
+    //上架
+    @PostMapping("/up")
+    @ResponseBody
+    public ResultVO upSale(@RequestParam(value = "ids[]")Integer[] ids){
+        //校验参数
+        if (ids == null || ids.length == 0){
+            log.info("【上架功能】 参数错误，上架失败！ids={}",ids);
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"参数错误，上架失败！");
+        }
+        //调用service修改
+        appInfoService.up(ids);
         //响应数据
         return R.ok();
     }
