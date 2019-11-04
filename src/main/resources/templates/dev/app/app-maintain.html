@@ -175,6 +175,7 @@
             //   var flag = checkStatus.isAll; //  是否全选
             //   JSON.stringify(data);    // 将一个数组序列化成json
             switch(obj.event){
+                //添加
                 case 'add':
                     //1. 弹出一个全新的窗口.
                     layer.open({
@@ -185,7 +186,7 @@
                         area: ['1000px', '800px'],
                         end: function(){
                             // 重新加载表格
-                            table.reload('appMaintain', {
+                            table.reload('softTable', {
                                 where: {
                                     softwareName: $("#softwareName").val(),
                                     flatformId: $("#flatformId").val(),
@@ -198,9 +199,9 @@
                         }
                     });
                     break;
-                /*case 'up':
+                case 'up':
                     //2. 执行上架操作.
-                    //1. 判断软件状态   已下架and审核通过.     待审核,审核驳回,已上架
+                    //1. 判断软件状态   已下架和审核通过.     待审核,审核驳回,已上架的状态不能执行上架操作
                     var checkStatus = table.checkStatus(obj.config.id);
                     var dataArray = checkStatus.data;
                     //2. 声明参数id
@@ -223,7 +224,7 @@
                             if(result.code == 0){
                                 layer.msg("上架成功!");
                                 // 重新加载表格
-                                table.reload('appMaintain', {
+                                table.reload('softTable', {
                                     where: {
                                         softwareName: $("#softwareName").val(),
                                         flatformId: $("#flatformId").val(),
@@ -241,7 +242,7 @@
                     );
 
                     break;
-                case 'down':
+                /*case 'down':
                     break;
                 case 'del':
                     break;*/
