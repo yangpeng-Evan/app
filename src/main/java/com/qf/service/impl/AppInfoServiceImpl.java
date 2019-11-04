@@ -113,4 +113,35 @@ public class AppInfoServiceImpl implements AppInfoService {
             throw new AppException(AppEnum.UP_SALE_ERROR);
         }
     }
+
+    @Override
+    public void down(Integer[] ids) {
+        //封装查询条件
+        Example example = new Example(AppInfo.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andIn("id", Arrays.asList(ids));
+        //查询数据
+        List<AppInfo> list = appInfoMapper.selectByExample(example);
+        //循环遍历判断app状态
+        for (AppInfo appInfo : list) {
+            int status = appInfo.getAppStatus();
+            if (status == AppStatusEnum.OFF_SALE.getStatus() ||
+                status == AppStatusEnum.CHECK_NOT_PASS.getStatus() ||
+                status == AppStatusEnum.CHECK_WAIT.getStatus() ||
+                status == AppStatusEnum.CHECK_ALREADY.getStatus()){
+                log.error("【app下架】 app下架失败01！appInfo={}",appInfo);
+                throw new AppException(AppEnum.DOWN_SALE_ERROR);
+            }
+        }
+        //执行修改
+        AppInfo appInfo = new AppInfo();
+        appInfo.setAppStatus(AppStatusEnum.OFF_SALE.getStatus());
+        appInfo.setOnSaleDate(new Date());
+        int count = appInfoMapper.updateByExampleSelective(appInfo, example);
+        //判断是否修改成功
+        if (count != ids.length){
+            log.error("【app下架】 app下架失败02！appInfo={}",appInfo);
+            throw new AppException(AppEnum.DOWN_SALE_ERROR);
+        }
+    }
 }

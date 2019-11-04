@@ -30,8 +30,14 @@ public interface AppInfoService {
     void add(AppInfo appInfo);
 
     /**
-     * 更新app状态
+     * 更新app状态，上架
      * @param ids
      */
     void up(Integer[] ids);
+
+    /**
+     * 更新app状态，下架
+     * @param ids
+     */
+    void down(Integer[] ids);
 }
