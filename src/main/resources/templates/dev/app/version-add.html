@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>添加app版本页面</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    <i th:replace="~{common :: baseUrl}"></i>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>历史版本</legend>
+    </fieldset>
+
+    <!--    静态表格展示历史版本-->
+    <div class="layui-form">
+        <table class="layui-table">
+            <thead>
+            <tr>
+                <th>软件名称</th>
+                <th>版本号</th>
+                <th>软件大小</th>
+                <th>发布状态</th>
+                <th>APK文件下载</th>
+                <!--                <th>APK文件下载</th>-->
+                <th>最新更新时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="version : ${versionList}">
+                <td th:text="${version.softwareName}"></td>
+                <td th:text="${version.versionNo}">华夏族（汉族）</td>
+                <td th:text="${version.versionSize}">公元前-372年</td>
+                <td th:text="${version.publishStatusName}">猿强，则国强。国强，则猿更强！ </td>
+                <td th:utext="'<a href='+${version.downloadLink}+'>'+${version.apkFileName}+'</a>'"></td>
+                <!--                    <td ><a th:href="${version.downloadLink}" th:text="${version.apkFileName}"></a></td>-->
+                <td th:text="${#dates.format(version.updated,'yyyy-MM-dd HH:mm:ss')}">猿强，则国强。国强，则猿更强！ </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>新增版本</legend>
+    </fieldset>
+
+    <!--    1. 表单-->
+    <form class="layui-form" action="">
+        <input type="hidden" name="downloadLink" id="downloadLink" />
+        <input type="hidden" name="appId" id="appId" th:value="${appId}" />
+        <!--        2. 版本号,版本大小,发布状态-->
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">版本号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="versionNo" lay-verify="required" lay-reqText="版本号为必填项,岂能不填!" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">版本大小</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="versionSize"  lay-verify="required" lay-reqText="版本大小为必填项,岂能不填!" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">发布状态</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="预发布" readonly autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <!--        3. 上传apk文件-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">上传apk文件</label>
+            <div class="layui-inline">
+                <button type="button" class="layui-btn" id="apkUpload">
+                    <i class="layui-icon">&#xe67c;</i>上传APK文件
+                </button>
+                <span id="uploadApkInfo"></span>
+            </div>
+        </div>
+        <!--        4. 富文本编辑器-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">版本简介</label>
+            <div class="layui-input-block" style="width: 83.75%;">
+                <textarea id="versionInfo" name="versionInfo" lay-verify="versionInfo" lay-filter="versionInfo" style="display: none;"></textarea>
+            </div>
+        </div>
+        <!--        5. 俩按钮-->
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit"  class="layui-btn" lay-submit="" lay-filter="go">保存</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:src="@{/layui/layui.js}"></script>
+<script>
+    //JavaScript代码区域
+    layui.use(['element','form','upload','layedit'], function(){
+        var element = layui.element;
+        var $ = layui.$;
+        var form = layui.form;
+        var upload = layui.upload;
+        var layedit = layui.layedit;
+        //构建富文本编辑框
+        var layeditVersionInfo = layedit.build('versionInfo', {
+            height: 150 //设置编辑器高度
+        });
+        //1.文件上传.
+        var uploadInst = upload.render({
+            elem: '#apkUpload' //绑定元素
+            ,url: baseUrl + 'upload/apk' //上传接口
+            ,accept: 'file'
+            ,exts: 'apk'
+            ,size: 524288000
+            ,done: function(res){
+                //上传完毕回调
+                //1. 如果上传apk文件成功,将访问路径设置到隐藏域中.
+                if(res.code == 0){
+                    $("#downloadLink").val(res.data.src);
+                    // 给用户提示,上传apk文件成功
+                    $("#uploadApkInfo").html("上传APK文件成功!").css("color","green");
+                }else{
+                    // 失败
+                    $("#uploadApkInfo").html("上传APK文件失败!").css("color","red");
+                }
+            }
+            ,error: function(){
+                //请求异常回调
+                $("#uploadApkInfo").html("上传APK文件失败!").css("color","red");
+                layer.msg("网络开小差了,请稍后再试...");
+            }
+        });
+
+        //6. 监听表单提交事件.
+        form.on('submit(go)',function(data){
+            //1. 获取全部的表单项,并以key:value展示.
+            var formData = data.field;
+            //2. 发送ajax请求,执行添加.
+            $.ajax({
+                url: baseUrl + "dev/app/version-add",
+                data: formData,
+                type: "post",
+                dataType: "json",
+                success: function(result){
+                    if(result.code == 0){
+                        var versionNo = result.data;
+                        layui.sessionData('app',{
+                            key:"versionNo",
+                            value: versionNo
+                        })
+                        // 给用户一个提示
+                        layer.open({
+                            title: '添加APP版本信息',
+                            content: '添加成功!!!',
+                            end: function(){
+                                //当你在iframe页面关闭自身时
+                                // 关闭当前窗口
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index); //再执行关闭
+                            }
+                        });
+                    }else{layer.msg(result.msg);}
+                },
+                error: function(){
+                    layer.msg("服务器原地爆炸,请联系管理员!!!");
+                }
+            });
+            return false;  // 阻止表单提交.
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qf.entity.AppCategory;
 import com.qf.entity.AppInfo;
+import com.qf.entity.AppVersion;
 import com.qf.entity.DevUser;
 import com.qf.enums.AppEnum;
 import com.qf.enums.AppStatusEnum;
@@ -144,4 +145,35 @@ public class AppInfoServiceImpl implements AppInfoService {
             throw new AppException(AppEnum.DOWN_SALE_ERROR);
         }
     }
+
+    @Override
+    @Transactional
+    public void del(Integer[] ids) {
+        //封装查询条件
+        Example example = new Example(AppInfo.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andIn("id", Arrays.asList(ids));
+        //调用appMapper删除信息
+        int count = appInfoMapper.deleteByExample(example);
+        if (count != ids.length){
+            log.error("【删除功能】 删除失败！example={}",example);
+            throw new AppException(AppEnum.DELETE_APPINFO_ERROR);
+        }
+    }
+
+    @Override
+    public AppInfo findById(Integer appId) {
+        AppInfo appInfo = appInfoMapper.selectByPrimaryKey(appId);
+        return appInfo;
+    }
+
+    @Override
+    public void updateVersionId(AppInfo appInfo) {
+        int count = appInfoMapper.updateByPrimaryKeySelective(appInfo);
+        if (count != 1){
+            log.error("【新增版本信息】 更新appInfo中版本信息失败！");
+            throw new AppException(AppEnum.UNKNOWN_ERROR.getCode(),"更新appInfo中版本信息失败");
+        }
+    }
+
 }

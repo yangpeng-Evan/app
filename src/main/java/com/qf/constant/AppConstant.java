@@ -12,7 +12,9 @@ public interface AppConstant {
 
     String SUCCESS_PAGE = "success";
 
-    int MAX_UPLOAD_SIZE = 5242880;
+    long MAX_UPLOAD_SIZE = 5242880;
+
+    long MAX_UPLOAD_SIZE_APK = 5242880000L;
 
 
 

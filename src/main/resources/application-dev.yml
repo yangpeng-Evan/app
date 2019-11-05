@@ -16,6 +16,10 @@ spring:
     username: 13478530122@163.com
     password: yangpeng1211
     activeUrl: http://10.9.63.232
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1033MB
 
 mybatis:
   configuration:

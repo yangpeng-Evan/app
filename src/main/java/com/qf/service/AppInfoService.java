@@ -1,6 +1,7 @@
 package com.qf.service;
 
 import com.qf.entity.AppInfo;
+import com.qf.entity.AppVersion;
 import com.qf.vo.DownloadsVO;
 import com.qf.vo.LayUiTableVO;
 
@@ -40,4 +41,23 @@ public interface AppInfoService {
      * @param ids
      */
     void down(Integer[] ids);
+
+    /**
+     * 根据id删除appinfo信息
+     * @param ids
+     */
+    void del(Integer[] ids);
+
+    /**
+     * 根据id查询app信息
+     * @param appId
+     * @return
+     */
+    AppInfo findById(Integer appId);
+
+    /**
+     * 修改appInfo中的versionId
+     * @param appInfo
+     */
+    void updateVersionId(AppInfo appInfo);
 }

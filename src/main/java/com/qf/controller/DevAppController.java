@@ -2,12 +2,14 @@ package com.qf.controller;
 
 import com.qf.entity.AppCategory;
 import com.qf.entity.AppInfo;
+import com.qf.entity.AppVersion;
 import com.qf.entity.DataDictionary;
 import com.qf.enums.AppEnum;
 import com.qf.enums.AppTypeCodeEnum;
 import com.qf.form.AppMaintainForm;
 import com.qf.service.AppCategoryService;
 import com.qf.service.AppInfoService;
+import com.qf.service.AppVersionService;
 import com.qf.service.DataDictionaryService;
 import com.qf.util.R;
 import com.qf.vo.DownloadsVO;
@@ -41,6 +43,9 @@ public class DevAppController {
 
     @Autowired
     private AppCategoryService appCategoryService;
+
+    @Autowired
+    private AppVersionService appVersionService;
 
 
     // 一级分类父id
@@ -155,5 +160,56 @@ public class DevAppController {
         appInfoService.up(ids);
         //响应数据
         return R.ok();
+    }
+    //下架
+    @PostMapping("/down")
+    @ResponseBody
+    public ResultVO downSale(@RequestParam(value = "ids[]")Integer[] ids){
+        //校验参数
+        if (ids == null || ids.length == 0){
+            log.info("【下架功能】 参数错误，下架失败！ids={}",ids);
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"参数错误，下架失败！");
+        }
+        //调用service修改
+        appInfoService.down(ids);
+        //响应数据
+        return R.ok();
+    }
+
+    @PostMapping("/del")
+    @ResponseBody
+    public ResultVO delAppInfo(@RequestParam(value = "ids[]")Integer[] ids){
+        //校验参数
+        if (ids == null || ids.length == 0){
+            log.info("【删除功能】 参数错误，删除失败！ids={}",ids);
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"参数错误，删除失败！");
+        }
+        //调用service删除appinfo
+        appInfoService.del(ids);
+        return R.ok();
+    }
+
+    @GetMapping("/version-add-ui/{id}")
+    public String VersionAddUi(@PathVariable Integer id,Model model){
+//        接收参数,调用service查询数据,三个最新的历史版本和appId放到req域中,转发页面
+        List<AppVersion> list = appVersionService.findNewThreeVersions(id);
+        model.addAttribute("versionList",list);
+        model.addAttribute("appId",id);
+        return "dev/app/version-add";
+    }
+
+    @PostMapping("/version-add")
+    @ResponseBody
+    public ResultVO versionAdd(@Valid AppVersion appVersion,BindingResult bindingResult){
+//        2. controller接收参数并校验.
+        if (bindingResult.hasErrors()){
+            String msg = bindingResult.getFieldError().getDefaultMessage();
+            log.info("【新增版本号】 参数错误！appVersion={}",appVersion);
+            return R.error(AppEnum.PARAM_ERROR.getCode(),msg);
+        }
+//        3. controller调用service保存.
+        appVersionService.add(appVersion);
+//        4.响应数据
+        return R.ok(appVersion.getVersionNo());
     }
 }

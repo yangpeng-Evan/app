@@ -100,9 +100,9 @@
 
         <script type="text/html" id="barDemo">
             <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑</a>
-            <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-add-1"></i>新增app版本</a>
-            <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑app版本</a>
-            <a class="layui-btn layui-btn-danger layui-btn-xs"><i class="layui-icon layui-icon-file"></i>查看</a>
+            <a class="layui-btn layui-btn-xs" lay-event="version-add"><i class="layui-icon layui-icon-add-1"></i>新增app版本</a>
+            <a class="layui-btn layui-btn-xs" lay-event="version-edit"><i class="layui-icon">&#xe642;</i>编辑app版本</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="look-one-look"><i class="layui-icon layui-icon-file"></i>查看</a>
         </script>
     </div>
 
@@ -119,6 +119,43 @@
         var form = layui.form;
         var table = layui.table;
         var $ = layui.$;
+
+        // 监听行工具栏
+        table.on('tool(softTable)', function(obj){
+            // 获取当前行的数据
+            var data = obj.data;
+            console.log(data);
+            // 判断触发的事件
+            if(obj.event === 'edit'){
+                layer.msg("编辑操作");
+            }else if(obj.event === 'version-add'){
+                layer.open({
+                    type: 2,
+                    content: baseUrl + 'dev/app/version-add-ui/' + data.id,
+                    // 指定宽高
+                    area: ['1000px', '800px'],
+                    end: function () {
+                        var app = layui.sessionData("app");
+                        var versionNo = app.versionNo;
+                        if (versionNo != null || versionNo != ''){
+                            //动态修改版本号
+                            obj.update({
+                                versionNo:versionNo
+                            });
+                            //删除sessionstroage中的数据
+                            layui.sessionData('app',{
+                                key:versionNo,
+                                remove:true
+                            })
+                        }
+                    }
+                });
+            }else if(obj.event === 'version-edit'){
+                layer.msg("修改版本操作");
+            }else if(obj.event === 'look-one-look'){
+                layer.msg("查看详细信息操作");
+            }
+        });
 
         //1. 绑定一级分类的监听事件.
         form.on('select(levelOne)', function(data){
@@ -138,7 +175,7 @@
         ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
         ,cols: [[
             {type:'checkbox',fixed:'left'}
-            ,{field:'softwareName',title:'软件名称',width:120}
+            ,{field:'softwareName',title:'软件名称'}
             ,{field:'softwareSize',title:'软件大小'}
             ,{field:'flatformName',title:'所属平台'}
             ,{field:'appStatusName',title:'软件状态'}
@@ -147,7 +184,7 @@
             ,{field:'categoryLevel3Name',title:'三级分类'}
             ,{field:'downloads',title:'下载次数'}
             ,{field:'versionNo',title:'软件版本'}
-            ,{fixed:'right',title:'操作',toolbar:'#barDemo',width:'37.5%'}
+            ,{fixed:'right',title:'操作',toolbar:'#barDemo',width:'33%'}
         ]]
         ,page: true
     });
@@ -242,10 +279,84 @@
                     );
 
                     break;
-                /*case 'down':
+                case 'down':
+                    //2. 执行下架操作.
+                    //1. 判断软件状态   已上架.     审核通过，待审核,审核驳回,已下架的状态不能执行下架操作
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    var dataArray = checkStatus.data;
+                    //2. 声明参数id
+                    var ids = [];
+                    //3. 遍历dataArray数组判断,并封装数据id
+                    for(var i = 0;i < dataArray.length;i++){
+                        if(dataArray[i].appStatus == 1 || dataArray[i].appStatus == 3 || dataArray[i].appStatus == 5 || dataArray[i].appStatus == 2){
+                            layer.msg(dataArray[i].softwareName + "的状态为:" + dataArray[i].appStatusName + ",不能执行下架操作!!");
+                            return;
+                        }
+                        // 满足要求
+                        ids.push(dataArray[i].id);
+                    }
+                    console.log(ids);
+                    //4. 发送ajax请求,修改软件状态.
+                    $.post(
+                        baseUrl + "dev/app/down",
+                        {ids: ids},
+                        function(result){
+                            if(result.code == 0){
+                                layer.msg("下架成功!");
+                                // 重新加载表格
+                                table.reload('softTable', {
+                                    where: {
+                                        softwareName: $("#softwareName").val(),
+                                        flatformId: $("#flatformId").val(),
+                                        appStatus: $("#appStatus").val(),
+                                        levelOne: $("#levelOne").val(),
+                                        levelTwo: $("#levelTwo").val(),
+                                        levelThree: $("#levelThree").val()
+                                    }
+                                });
+                            }else{
+                                layer.msg(result.msg);
+                            }
+                        },
+                        "json"
+                    );
                     break;
                 case 'del':
-                    break;*/
+                    //2. 执行删除操作.
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    var dataArray = checkStatus.data;
+                    //2. 声明参数id
+                    var ids = [];
+                    //3. 遍历dataArray数组,并封装数据id
+                    for(var i = 0;i < dataArray.length;i++){
+                        ids.push(dataArray[i].id);
+                    }
+                    console.log(ids);
+                    //4. 发送ajax请求,删除APPInfo
+                    $.post(
+                        baseUrl + "dev/app/del",
+                        {ids: ids},
+                        function(result){
+                            if(result.code == 0){
+                                layer.msg("删除成功!");
+                                // 重新加载表格
+                                table.reload('softTable', {
+                                    where: {
+                                        softwareName: $("#softwareName").val(),
+                                        flatformId: $("#flatformId").val(),
+                                        appStatus: $("#appStatus").val(),
+                                        levelOne: $("#levelOne").val(),
+                                        levelTwo: $("#levelTwo").val(),
+                                        levelThree: $("#levelThree").val()
+                                    }
+                                });
+                            }else{
+                                layer.msg(result.msg);
+                            }
+                        },
+                        "json"
+                    );
+                    break;
             };
         });
     });

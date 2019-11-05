@@ -18,7 +18,11 @@ public enum AppEnum {
     UPDATE_DEVUSER_STATE_ERROR(43,"修改用户状态失败！！"),
     DEVUSER_NOT_ACTIVE_ERROR(50,"用户未激活！！"),
     SAVE_BASE_INFO_ERROR(60,"添加app基础信息失败！！"),
-    UP_SALE_ERROR(70,"app上架失败！！")
+    UP_SALE_ERROR(70,"app上架失败！！"),
+    DOWN_SALE_ERROR(71,"app下架失败！！"),
+    DELETE_APPINFO_ERROR(81,"app删除失败！！"),
+
+    UNKNOWN_ERROR(100,"未知原因！")
 
     ;
 

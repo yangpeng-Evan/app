@@ -34,6 +34,8 @@ public class UploadController {
     private final String PIC_DIR = "images";
     private final String APK_DIR = "apks";
 
+    private final String APK_TYPE_NAME = ".apk";
+
     @Resource
     private UploadUtil uploadUtil;
 
@@ -83,6 +85,34 @@ public class UploadController {
         //响应数据
         Map<String,String> data = new HashMap<>();
         data.put("src",url);
+        return R.ok(data);
+    }
+
+    @PostMapping("/apk")
+    @ResponseBody
+    public ResultVO uploadApk(MultipartFile file) throws IOException {
+        //校验null
+        if (file == null){
+            log.info("【apk文件上传】 文件不能为空！");
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"文件不能为空！");
+        }
+        //校验文件大小
+        if (file.getSize() > AppConstant.MAX_UPLOAD_SIZE_APK){
+            log.info("【apk文件上传】 上传的文件过大，请重新上传！file.getSize={}",file.getSize());
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"上传的文件过大，请重新上传！");
+        }
+        //校验类型
+        if (!StringUtils.endsWithIgnoreCase(file.getOriginalFilename(),APK_TYPE_NAME)){
+            log.info("【apk文件上传】 上传的文件类型不正确，请正确上传apk文件！file={}",file);
+            return R.error(AppEnum.PARAM_ERROR.getCode(),"上传的文件类型不正确，请正确上传apk文件！");
+        }
+        //新名字
+        String newName = RandomUtil.random()+APK_TYPE_NAME;
+        //5. 保存到OSS上.
+        String src = uploadUtil.uploadPic(APK_DIR + "/" + newName, file.getInputStream());
+        //6. 响应.
+        Map<String,String> data = new HashMap<>();
+        data.put("src",src);
         return R.ok(data);
     }
 }
