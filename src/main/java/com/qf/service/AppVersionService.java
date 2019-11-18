@@ -20,4 +20,10 @@ public interface AppVersionService {
      * @param appVersion
      */
     void add(AppVersion appVersion);
+
+    /**
+     * 更新app版本信息
+     * @param appVersion
+     */
+    void updateAppVersion(AppVersion appVersion);
 }

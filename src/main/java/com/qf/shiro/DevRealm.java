@@ -45,9 +45,9 @@ public class DevRealm extends AuthorizingRealm {
         if(devUser == null){
             return null;
         }
-
-        //判断用户是否激活
-        if (devUser.getDevState() == DevUserStateEnum.NOT_ACTIVE.getState()){
+        //3.5 判断用户是否激活.
+        if(devUser.getDevState() == DevUserStateEnum.NOT_ACTIVE.getState()){
+            // 用户未激活.
             throw new AppException(AppEnum.DEVUSER_NOT_ACTIVE_ERROR);
         }
         //4. 将正确的user对象和密码封装到AuthenticationInfo对象中.

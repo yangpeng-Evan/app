@@ -22,7 +22,9 @@ public enum AppEnum {
     DOWN_SALE_ERROR(71,"app下架失败！！"),
     DELETE_APPINFO_ERROR(81,"app删除失败！！"),
 
-    UNKNOWN_ERROR(100,"未知原因！")
+    UNKNOWN_ERROR(100,"未知原因！"),
+    SESSION_ISEMPTY(110,"session不能为空！！"),
+    SESSIONID_ISEMPTY(111,"sessionId不能为空！！")
 
     ;
 

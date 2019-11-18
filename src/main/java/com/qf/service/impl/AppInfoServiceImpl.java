@@ -168,7 +168,7 @@ public class AppInfoServiceImpl implements AppInfoService {
     }
 
     @Override
-    public void updateVersionId(AppInfo appInfo) {
+    public void updateVersionIdAndSize(AppInfo appInfo) {
         int count = appInfoMapper.updateByPrimaryKeySelective(appInfo);
         if (count != 1){
             log.error("【新增版本信息】 更新appInfo中版本信息失败！");

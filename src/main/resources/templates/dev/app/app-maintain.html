@@ -127,8 +127,10 @@
             console.log(data);
             // 判断触发的事件
             if(obj.event === 'edit'){
+                //编辑app信息
                 layer.msg("编辑操作");
             }else if(obj.event === 'version-add'){
+                //添加app版本
                 layer.open({
                     type: 2,
                     content: baseUrl + 'dev/app/version-add-ui/' + data.id,
@@ -151,8 +153,35 @@
                     }
                 });
             }else if(obj.event === 'version-edit'){
-                layer.msg("修改版本操作");
+                //编辑app版本
+                layer.open({
+                    type: 2,
+                    content: baseUrl + 'dev/app/version-edit-ui/' + data.id,
+                    // 指定宽高
+                    area: ['1000px', '800px'],
+                    end: function () {
+                        var app = layui.sessionData("app");
+                        var versionNo = app.versionNo;
+                        var softwareSize = app.softwareSize;
+                        if (versionNo != null || versionNo != ''){
+                            //动态修改版本号
+                            obj.update({
+                                versionNo:versionNo,
+                                softwareSize:softwareSize
+                            });
+                            //删除sessionstroage中的数据
+                            layui.sessionData('app',{
+                                key:versionNo,
+                                remove:true
+                            },{
+                                key:softwareSize,
+                                remove:true
+                            })
+                        }
+                    }
+                });
             }else if(obj.event === 'look-one-look'){
+                //查看App信息
                 layer.msg("查看详细信息操作");
             }
         });

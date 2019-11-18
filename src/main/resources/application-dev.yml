@@ -4,6 +4,9 @@ server:
 
 
 spring:
+  redis:
+    cluster:
+      nodes: 118.190.134.68:7001,118.190.134.68:7002,118.190.134.68:7003,118.190.134.68:7004,118.190.134.68:7005,118.190.134.68:7006
   # 连接数据库
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
@@ -49,6 +52,11 @@ shiro:
 upload:
   pic:
     types: jpg,png,jpeg,gif
+
+#redis配置
+redis:
+  host: 118.190.134.68
+  port: 6379
 
 #阿里云配置
 aliyun:

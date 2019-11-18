@@ -108,7 +108,7 @@ public class DevUserController {
     //转发到重新发送邮件页面
     @GetMapping("/resend-ui")
     public String reSend(){
-        return "/dev/user/resend";
+        return "dev/user/resend";
     }
 
     //重新发送激活邮件

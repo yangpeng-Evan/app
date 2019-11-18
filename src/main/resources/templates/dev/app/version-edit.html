@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>添加app版本页面</title>
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
     <i th:replace="~{common :: baseUrl}"></i>
 </head>
@@ -11,63 +10,32 @@
 <div class="layui-layout layui-layout-admin">
 
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-        <legend>历史版本</legend>
-    </fieldset>
-
-    <!--    静态表格展示历史版本-->
-    <div class="layui-form">
-        <table class="layui-table">
-            <thead>
-            <tr>
-                <th>软件名称</th>
-                <th>版本号</th>
-                <th>软件大小</th>
-                <th>发布状态</th>
-                <th>APK文件下载</th>
-                <!--                <th>APK文件下载</th>-->
-                <th>最新更新时间</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="version : ${versionList}">
-                <td th:text="${version.softwareName}"></td>
-                <td th:text="${version.versionNo}">华夏族（汉族）</td>
-                <td th:text="${version.versionSize}">公元前-372年</td>
-                <td th:text="${version.publishStatusName}">猿强，则国强。国强，则猿更强！ </td>
-                <td th:utext="'<a href='+${version.downloadLink}+'>'+${version.apkFileName}+'</a>'"></td>
-                <!--                    <td ><a th:href="${version.downloadLink}" th:text="${version.apkFileName}"></a></td>-->
-                <td th:text="${#dates.format(version.updated,'yyyy-MM-dd HH:mm:ss')}">猿强，则国强。国强，则猿更强！ </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-        <legend>新增版本</legend>
+        <legend>编辑app版本</legend>
     </fieldset>
 
     <!--    1. 表单-->
     <form class="layui-form" action="">
-        <input type="hidden" name="downloadLink" id="downloadLink" />
-        <input type="hidden" name="appId" id="appId" th:value="${appId}" />
+        <input type="hidden" name="downloadLink" id="downloadLink" th:value="${appVersion.getDownloadLink()}" />
+        <input type="hidden" name="appId" id="appId" th:value="${appVersion.getAppId()}" />
+        <input type="hidden" name="appVersionId" id="appVersionId" th:value="${appVersion.getId()}" />
         <!--        2. 版本号,版本大小,发布状态-->
         <div class="layui-form-item">
             <div class="layui-inline">
                 <label class="layui-form-label">版本号</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="versionNo" lay-verify="required" lay-reqText="版本号为必填项,岂能不填!" autocomplete="off" class="layui-input">
+                    <input type="text" name="versionNo" th:value="${appVersion.getVersionNo()}" lay-verify="required" lay-reqText="版本号为必填项,岂能不填!" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-inline">
                 <label class="layui-form-label">版本大小</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="versionSize"  lay-verify="required" lay-reqText="版本大小为必填项,岂能不填!" autocomplete="off" class="layui-input">
+                    <input type="text" id="versionSize" name="versionSize" th:value="${appVersion.getVersionSize()}"  lay-verify="required" lay-reqText="版本大小为必填项,岂能不填!" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-inline">
                 <label class="layui-form-label">发布状态</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="预发布" readonly autocomplete="off" class="layui-input">
+                    <input type="text" th:value="${appVersion.getPublishStatusName()}" readonly autocomplete="off" class="layui-input">
                 </div>
             </div>
         </div>
@@ -85,14 +53,14 @@
         <div class="layui-form-item">
             <label class="layui-form-label">版本简介</label>
             <div class="layui-input-block" style="width: 83.75%;">
-                <textarea id="versionInfo" name="versionInfo" lay-verify="versionInfo" lay-filter="versionInfo" style="display: none;"></textarea>
+                <textarea id="versionInfo" th:text="${appVersion.getVersionInfo()}" name="versionInfo" lay-verify="versionInfo" lay-filter="versionInfo" style="display: none;"></textarea>
             </div>
         </div>
         <!--        5. 俩按钮-->
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button type="submit"  class="layui-btn" lay-submit="" lay-filter="go">保存</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                <button type="submit"  class="layui-btn" lay-submit="" lay-filter="go">修改</button>
+                <button type="reset" class="layui-btn layui-btn-primary">取消</button>
             </div>
         </div>
     </form>
@@ -136,26 +104,14 @@
             }
         });
 
-        //3. 表单校验.
-        form.verify({
-            versionInfo: function(value, item){ //value：表单的值、item：表单的DOM对象
-                var content = layedit.getContent(layeditVersionInfo);
-                if(content == null || content == ''){
-                    return "App简介不能为空！";
-                }
-                // 将数据同步到当前的textarea中
-                layedit.sync(layeditVersionInfo);
-            }
-
-        });
-
         //6. 监听表单提交事件.
         form.on('submit(go)',function(data){
             //1. 获取全部的表单项,并以key:value展示.
             var formData = data.field;
+            var softwareSize = $("#versionSize").val();
             //2. 发送ajax请求,执行添加.
             $.ajax({
-                url: baseUrl + "dev/app/version-add",
+                url: baseUrl + "dev/app/version-edit",
                 data: formData,
                 type: "post",
                 dataType: "json",
@@ -165,11 +121,14 @@
                         layui.sessionData('app',{
                             key:"versionNo",
                             value: versionNo
+                        },{
+                            key:"softwareSize",
+                            value:softwareSize
                         })
                         // 给用户一个提示
                         layer.open({
-                            title: '添加APP版本信息',
-                            content: '添加成功!!!',
+                            title: '修改APP版本信息',
+                            content: '修改成功!!!',
                             end: function(){
                                 //当你在iframe页面关闭自身时
                                 // 关闭当前窗口

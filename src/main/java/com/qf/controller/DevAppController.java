@@ -1,9 +1,6 @@
 package com.qf.controller;
 
-import com.qf.entity.AppCategory;
-import com.qf.entity.AppInfo;
-import com.qf.entity.AppVersion;
-import com.qf.entity.DataDictionary;
+import com.qf.entity.*;
 import com.qf.enums.AppEnum;
 import com.qf.enums.AppTypeCodeEnum;
 import com.qf.form.AppMaintainForm;
@@ -17,6 +14,7 @@ import com.qf.vo.LayUiTableVO;
 import com.qf.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -54,7 +52,7 @@ public class DevAppController {
     //1.跳转到后台首页
     @GetMapping("/index")
     public String index(){
-        return "/dev/app/index";
+        return "dev/app/index";
     }
 
 
@@ -209,6 +207,42 @@ public class DevAppController {
         }
 //        3. controller调用service保存.
         appVersionService.add(appVersion);
+//        4.响应数据
+        return R.ok(appVersion.getVersionNo());
+    }
+
+    @GetMapping("/version-edit-ui/{id}")
+    public String versionEditUi(@PathVariable Integer id,Model model){
+        //校验参数
+        if (id == null){
+            log.info("【编辑app版本】 参数错误！");
+            return null;
+        }
+        //调用service查询app最新版本信息
+        List<AppVersion> list = appVersionService.findNewThreeVersions(id);
+        if (list.size()<1){
+            log.info("【编辑app版本】 参数错误！查询不到版本信息！");
+            return null;
+        }
+        //获取app最新的版本信息
+        AppVersion appVersion = list.get(0);
+        System.out.println(appVersion);
+        //将查询到的最新的app版本信息设置到域中
+        model.addAttribute("appVersion",appVersion);
+        return "dev/app/version-edit";
+    }
+
+    @PostMapping("/version-edit")
+    @ResponseBody
+    public ResultVO versionEdit(@Valid AppVersion appVersion,BindingResult bindingResult,Integer appVersionId){
+        //校验参数
+        if (bindingResult.hasErrors()){
+            log.info("【编辑app版本】 参数错误！ appversion={}",appVersion);
+            return R.error(AppEnum.PARAM_ERROR);
+        }
+        appVersion.setId(appVersionId);
+//        3. controller调用service更新.
+        appVersionService.updateAppVersion(appVersion);
 //        4.响应数据
         return R.ok(appVersion.getVersionNo());
     }

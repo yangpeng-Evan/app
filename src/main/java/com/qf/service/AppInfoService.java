@@ -59,5 +59,5 @@ public interface AppInfoService {
      * 修改appInfo中的versionId
      * @param appInfo
      */
-    void updateVersionId(AppInfo appInfo);
+    void updateVersionIdAndSize(AppInfo appInfo);
 }

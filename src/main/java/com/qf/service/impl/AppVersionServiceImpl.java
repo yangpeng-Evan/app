@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -20,9 +21,9 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class AppVersionServiceImpl implements AppVersionService {
+                        public class AppVersionServiceImpl implements AppVersionService {
 
-    @Autowired
+    @Resource
     private AppVersionMapper appVersionMapper;
 
     @Autowired
@@ -46,6 +47,21 @@ public class AppVersionServiceImpl implements AppVersionService {
             throw new AppException(AppEnum.UNKNOWN_ERROR);
         }
         appInfo.setVersionId(appVersion.getId());
-        appInfoService.updateVersionId(appInfo);
+        appInfoService.updateVersionIdAndSize(appInfo);
+    }
+
+    @Override
+    @Transactional
+    public void updateAppVersion(AppVersion appVersion) {
+        appVersion.setPublishStatus(PublishStatusEnum.PRE_PUBLISH.getCode());
+        AppInfo appInfo = appInfoService.findById(appVersion.getAppId());
+        int count = appVersionMapper.updateByPrimaryKeySelective(appVersion);
+        if (count != 1){
+            log.error("【更新app版本号】 更新版本号失败，未知原因！");
+            throw new AppException(AppEnum.UNKNOWN_ERROR);
+        }
+        appInfo.setVersionId(appVersion.getId());
+        appInfo.setSoftwareSize(appVersion.getVersionSize());
+        appInfoService.updateVersionIdAndSize(appInfo);
     }
 }

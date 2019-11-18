@@ -1,0 +1,63 @@
+server:
+  # 端口号
+  port: 80
+
+
+spring:
+  # 连接数据库
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql:///app?characterEncoding=UTF-8&useSSL=false
+    username: username
+    password: P@ssw0rd
+    type: com.alibaba.druid.pool.DruidDataSource
+  mail:
+    host: smtp.163.com
+    username: 13478530122@163.com
+    password: yangpeng1211
+    activeUrl: http://118.190.134.68
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1033MB
+
+mybatis:
+  configuration:
+    # 驼峰映射
+    map-underscore-to-camel-case: true
+  # 扫描映射文件.
+  mapper-locations: classpath:mapper/*.xml
+  # 别名
+  type-aliases-package: com.qf.entity
+  # typeHandler
+  type-handlers-package: com.qf.typehandler
+
+# 分页助手
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+
+# shiro的路径
+shiro:
+  loginUrl: /dev/user/login-ui
+  unauthorizedUrl: /
+
+#上传图片的类型限制
+upload:
+  pic:
+    types: jpg,png,jpeg,gif
+
+#redis配置
+redis:
+  host: 118.190.134.68
+  port: 6379
+#阿里云配置
+aliyun:
+  endpoint: oss-cn-beijing.aliyuncs.com
+  accessKeyId: LTAI4FpY5qLNmNKpZAwocpyz
+  accessKeySecret: fHKbMgZKFAc7Dw575WPHYrDvCoxvlq
+  bucketName: yangpeng1
+
